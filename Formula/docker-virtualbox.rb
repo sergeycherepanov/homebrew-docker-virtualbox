@@ -1,34 +1,32 @@
 require 'formula'
 
-class Sshpass < Formula
-  depends_on cask: 'virtualbox'
+class DockerVirtualbox < Formula
+  url "https://github.com/sergeycherepanov/homebrew-docker-virtualbox.git", :using => :git
+  version "0.0.2"
+  revision 1
+
+  depends_on 'terminal-notifier'
   depends_on 'docker-cli'
   depends_on 'docker-compose'
+  depends_on 'docker-credential-helper'
   depends_on 'docker-machine'
   depends_on 'docker-machine-nfs'
+  depends_on 'docker-machine-pf'
 
-  keg_only "this package may conflict with official docker"
+  keg_only "this package may conflict with official docker client"
 
   def install
-    # Move everything under #{libexec}/
-    libexec.install Dir["*"]
-
-    # Then write executables under #{bin}/
-    bin.write_exec_script (libexec/"docker-machine-init.sh")
-    bin.write_exec_script (libexec/"docker.sh")
+    bin.install "bin/docker"
+    bin.install "bin/docker-compose"
+    bin.install "bin/docker-machine-init"
+    prefix.install "assets/djocker.png"
   end
 
   def caveats
       s = <<~EOS
         Docker Virtualbox was installed
 
-        Please dont forget to add docker alias to your rcfile
-
-        For ZSH
-        echo "alias docker=#{opt_bin}/docker.sh" >> ~/.zshrc
-
-        For BASH
-        echo "alias docker=#{opt_bin}/docker.sh" >> ~/.bashrc
+        Please don't forget to configure your PATH variable
       EOS
       s
     end
@@ -44,12 +42,12 @@ class Sshpass < Formula
         <string>#{plist_name}</string>
         <key>ProgramArguments</key>
         <array>
-          <string>#{opt_bin}/docker-machine-init.sh</string>
+          <string>#{opt_bin}/docker-machine-init</string>
         </array>
         <key>RunAtLoad</key>
         <true/>
         <key>WorkingDirectory</key>
-        <string>#{datadir}</string>
+        <string>/tmp</string>
       </dict>
       </plist>
     EOS

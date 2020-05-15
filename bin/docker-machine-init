@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+set -e
+#set -x
+exec > /tmp/docker-virtualbox.log
+exec 2>&1
+
+START_TIME=$(date +%s)
+
+if [[ "Darwin" == "$(uname)" ]]; then
+    BREW_BIN=/usr/local/bin
+else
+    BREW_BIN=/home/linuxbrew/.linuxbrew/bin
+fi
+
+PATH="${PATH}:${BREW_BIN}"
+TERMINAL_NOTIFIER_BIN="$(brew --prefix terminal-notifier)/bin/terminal-notifier -appIcon $(brew --prefix docker-virtualbox)/djocker.png"
+DOCKER_MACHINE_BIN=$(brew --prefix docker-machine)/bin/docker-machine
+DOCKER_MACHINE_NFS_BIN=$(brew --prefix docker-machine-nfs)/bin/docker-machine-nfs
+
+DOCKER_MACHINE_DRIVER=${DOCKER_DRIVER-virtualbox}
+DOCKER_MACHINE_MACHINE_NAME=${DOCKER_MACHINE_NAME-docker}
+
+${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Initialize..."
+sleep 1
+
+if [[ -z ${DOCKER_MACHINE_DISK_SIZE} ]]; then
+    if [[ $(df | grep '\/$' | awk '{print $2/1000}') -gt 200000 ]]; then
+        DOCKER_MACHINE_DISK_SIZE="32000"
+    else
+        DOCKER_MACHINE_DISK_SIZE="16000"
+    fi
+fi
+
+if [[ -z ${DOCKER_MACHINE_CPU_COUNT} ]]; then
+    if [[ "Darwin" == "$(uname)" ]]; then
+        DOCKER_MACHINE_CPU_COUNT=$(sysctl -n hw.ncpu | awk 'function ceil(x, y){y=int(x); return(x>y?y+1:y)} { print ceil($1*0.25) }')
+    else
+        DOCKER_MACHINE_CPU_COUNT=$(grep ^cpu\\scores /proc/cpuinfo | uniq |  awk '{print $4}' | awk 'function ceil(x, y){y=int(x); return(x>y?y+1:y)} { print ceil($1*0.25) }')
+    fi
+fi
+
+if [[ -z ${DOCKER_MACHINE_MEMORY_COUNT} ]]; then
+    if [[ "Darwin" == "$(uname)" ]]; then
+        DOCKER_MACHINE_MEMORY_COUNT=$(sysctl -n hw.memsize | awk '{ mem=($1 * 0.25 / 1024 / 1024 ); print int(mem > 4096 ? 4096 : mem) }')
+    else
+        DOCKER_MACHINE_MEMORY_COUNT=$(free -b | grep Mem | awk '{ mem=($2 * 0.25 / 1024 / 1024 ); print int(mem > 4096 ? 4096 : mem) }')
+    fi
+fi
+
+[[ "Running" == $(${DOCKER_MACHINE_BIN} status ${DOCKER_MACHINE_MACHINE_NAME}) ]] && {
+touch /tmp/docker-virtualbox.starting
+echo "===> Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' started"
+${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' started"
+} || {
+    touch /tmp/docker-virtualbox.starting
+    [[ "Stopped" == $(${DOCKER_MACHINE_BIN} status ${DOCKER_MACHINE_MACHINE_NAME}) ]] && {
+        ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Starting virtual machine: ${DOCKER_MACHINE_MACHINE_NAME}"
+        echo "===> Starting docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
+        ${DOCKER_MACHINE_BIN} start ${DOCKER_MACHINE_MACHINE_NAME}
+    } || {
+        echo "===> Creating docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
+        ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Creating virtual machine: ${DOCKER_MACHINE_MACHINE_NAME}"
+        ${DOCKER_MACHINE_BIN} create --driver ${DOCKER_MACHINE_DRIVER} \
+            --virtualbox-cpu-count ${DOCKER_MACHINE_CPU_COUNT} \
+            --virtualbox-memory ${DOCKER_MACHINE_MEMORY_COUNT} \
+            --virtualbox-disk-size ${DOCKER_MACHINE_DISK_SIZE} \
+            ${DOCKER_MACHINE_MACHINE_NAME}
+    }
+
+    # Extra vm options
+    ${DOCKER_MACHINE_BIN} ssh ${DOCKER_MACHINE_MACHINE_NAME} sudo sysctl -w vm.max_map_count=262144
+}
+
+${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Configuring NFS mount for: '${DOCKER_MACHINE_MACHINE_NAME}'"
+
+${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
+
+# setup env
+echo "export DOCKER_CLI_BIN_PATH=\"$(brew --prefix docker-cli)/bin/docker\"" > /tmp/docker-virtualbox.env
+echo "export DOCKER_COMPOSE_BIN_PATH=\"$(brew --prefix docker-compose)/bin/docker-compose\"" >> /tmp/docker-virtualbox.env
+echo "export DOCKER_MACHINE_PF_BIN_PATH=\"$(brew --prefix docker-machine-pf)/bin/pf\"" >> /tmp/docker-virtualbox.env
+echo "export DOCKER_MACHINE_IP=\"$(${DOCKER_MACHINE_BIN} ip ${DOCKER_MACHINE_MACHINE_NAME})\"" >> /tmp/docker-virtualbox.env
+${DOCKER_MACHINE_BIN} env ${DOCKER_MACHINE_MACHINE_NAME} >> /tmp/docker-virtualbox.env
+${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' ready for work"
+function stop()
+{
+    rm /tmp/docker-virtualbox.env
+    echo "===> Stopping docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
+    ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Stopping virtual machine: '${DOCKER_MACHINE_MACHINE_NAME}'"
+    ${DOCKER_MACHINE_BIN} stop ${DOCKER_MACHINE_MACHINE_NAME}
+    ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' stopped"
+    exit 0
+}
+
+source /tmp/docker-virtualbox.env
+
+trap stop SIGKILL
+trap stop SIGTERM
+trap stop SIGINT
+#set -x
+[[ -f /tmp/docker-virtualbox.starting ]] && rm /tmp/docker-virtualbox.starting
+while read -r event;
+do
+    subject=$(echo $event | awk '{ print $2 }')
+    action=$(echo $event | awk '{ print $3 }')
+    subjectid=$(echo $event | awk '{ print $4 }')
+    if [[ "container" == ${subject} ]]; then
+        case $action in
+          start)
+            ports="$(${DOCKER_CLI_BIN_PATH} inspect -f '{{range $p, $conf := .NetworkSettings.Ports }} {{ if $conf}} {{$conf}} {{end}} {{end}}' "${subjectid}" | sed -nE 's:\[\{[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[^0-9]*([0-9]{1,})\}\]:\1:pg' | xargs echo -n)"
+            [[ -z ${ports} ]] || {
+                for port in $ports;  do
+                    echo "Enabling port forwarding: ${port} -> ${DOCKER_MACHINE_IP}:${port}"
+                    >&2 ${DOCKER_MACHINE_PF_BIN_PATH} ${port} -e ${DOCKER_MACHINE_NAME}
+                done
+            }
+            ;;
+          *)
+            # skipping
+            ;;
+        esac
+    fi
+done < <(${DOCKER_CLI_BIN_PATH} events --since "${START_TIME}")

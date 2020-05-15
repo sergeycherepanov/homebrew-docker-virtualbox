@@ -1,0 +1,70 @@
+# Homebrew Docker Virtualbox
+This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can be used on any Mac.
+
+## Installation
+
+Allow mac users to mount nfs shares without root password:
+```bash
+echo "%staff ALL=(ALL) NOPASSWD: /sbin/nfsd
+%staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
+%staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/exports
+%staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/nfs.conf" | sudo tee /etc/sudoers.d/docker-machine-nfs
+```
+
+Install the Virtualbox from the Oracle website or via the homebrew:
+```bash
+brew cask install virtualbox
+```
+
+Install the tap
+```bash
+brew tap sergeycherepanov/docker-virtualbox
+```
+
+Install the docker-virtualbox
+```bash
+brew install docker-virtualbox
+```
+
+Configure PATH variable
+```bash
+# For the bash
+echo "export PATH=\"$(brew --prefix docker-virtualbox)/bin:\$PATH\"" >> ~/.bashrc
+# For the zsh
+echo "export PATH=\"$(brew --prefix docker-virtualbox)/bin:\$PATH\"" >> ~/.zshrc
+```
+
+Reload the shell
+```
+exec $SHELL
+```
+
+Start the docker-virtualbox service
+> It should creates and configure the fm
+> The live log will be available in `/tmp/docker-virtualbox.log`
+```bash
+brew services start docker-virtualbox 
+```
+
+Test the Docker
+```bash
+docker run -d -p 8989:80 nginx
+curl -v localhost:8989
+```
+
+SSH connection to the docker-machine
+```bash
+docker-machine ssh docker
+```
+
+To stop the service just run
+```bash
+brew services stop docker-virtualbox 
+```
+
+Manual port forwarding 
+> In some cases the forwarding rule can be broken, and you need to configure it again manually
+```bash
+pf 8989 -e docker
+```
+

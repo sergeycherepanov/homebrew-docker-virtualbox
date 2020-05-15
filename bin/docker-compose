@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -e
+#set -x
+LIMIT=90
+if [[ -f /tmp/docker-virtualbox.starting ]]; then
+    >&2 echo -e "\033[93mWaiting while Docker starting..."
+    >&2 echo -e "\033[0m"
+    i=0
+    while [[ -f /tmp/docker-virtualbox.starting ]]; do
+        if [[ "$i" -gt "$LIMIT" ]]; then
+            >&2 echo -e "Default \e[91mThe timeout reached, please verify the vm log for errors: /tmp/docker-virtualbox.log\e[39m"
+        fi
+        i=$(($i+1))
+        sleep 1;
+    done
+fi
+
+[[ -f /tmp/docker-virtualbox.env ]] || {
+    echo -e "\033[91m"
+    echo -e "\033[91mLooks like docker-virtualbox doesn't work"
+    echo -e ""
+    echo -e "\033[0mYou have to start it by following command:"
+    echo -e ""
+    echo -e "\033[96mbrew services start docker-virtualbox "
+    echo -e "\033[0m"
+    exit 1
+}
+
+source /tmp/docker-virtualbox.env
+
+exec ${DOCKER_COMPOSE_BIN_PATH} "$@"
