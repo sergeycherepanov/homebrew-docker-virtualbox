@@ -80,4 +80,5 @@ Manual port forwarding
 ```bash
 pf 8989 -e docker
 ```
-
+## Know issues
+* Cisco Anyconnect VPN brokes the ip filter on the local interface. Need to replace the `pf` with some ip balancer (`traefik` as example).
