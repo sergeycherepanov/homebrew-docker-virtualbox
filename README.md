@@ -27,7 +27,12 @@ Install the docker-virtualbox
 brew install docker-virtualbox
 ```
 
-Configure PATH variable
+If you didn't install Docker for Mac you can link binaries instead of PATH update
+```
+brew link --force --overwrite docker-virtualbox
+```
+
+Otherwise configure the PATH variable
 ```bash
 # For the bash
 echo "export PATH=\"$(brew --prefix docker-virtualbox)/bin:\$PATH\"" >> ~/.bashrc
