@@ -58,6 +58,8 @@ docker run -d -p 8989:80 nginx
 curl -v localhost:8989
 ```
 
+## Additional information
+
 SSH connection to the docker-machine
 ```bash
 docker-machine ssh docker
@@ -66,6 +68,11 @@ docker-machine ssh docker
 To stop the service just run
 ```bash
 brew services stop docker-virtualbox 
+```
+
+To setup environment for 3rd party tools (for example for `ctop`)
+```
+source /tmp/docker-virtualbox.env
 ```
 
 Manual port forwarding 
