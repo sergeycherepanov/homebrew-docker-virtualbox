@@ -3,14 +3,15 @@ This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can 
 
 ## Installation
 
-Allow mac users to mount nfs shares without root password:
+### Configure the docker-machine-nfs requirements
 > WARNING: Only this commands requires root permissions, all next should be run under your user
 
-Ensure the exports file
+Ensure the NFS exports file exists
 ```bash
 sudo touch /etc/exports
 ```
-Add sudoers. 
+
+Allow the staff group to configure NFS shares without password prompt  
 ```bash
 echo "%staff ALL=(ALL) NOPASSWD: /sbin/nfsd
 %staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
@@ -20,20 +21,19 @@ echo "%staff ALL=(ALL) NOPASSWD: /sbin/nfsd
 
 > Reboot your system to be sure that sudoers applied
 
-Install the Virtualbox from the Oracle website or via the homebrew:
+### Install the Virtualbox from the Oracle website or via the homebrew:
 ```bash
 brew cask install virtualbox
 ```
 
-Install the tap
+### Install the docker-virtualbox via Homebrew
+
 ```bash
 brew tap sergeycherepanov/docker-virtualbox
-```
-
-Install the docker-virtualbox
-```bash
 brew install docker-virtualbox
 ```
+
+### Configure the environment
 
 If you didn't install Docker for Mac you can link binaries instead of PATH update
 ```
@@ -53,14 +53,17 @@ Reload the shell
 exec $SHELL
 ```
 
-Start the docker-virtualbox service
+### Start the docker-virtualbox service
+
 > It should creates and configure the fm
 > The live log will be available in `/tmp/docker-virtualbox.log`
 ```bash
 brew services start docker-virtualbox 
 ```
 
-Test the Docker
+### Verify installation
+
+Test the Docker by running Nginx
 ```bash
 docker run -d -p 8989:80 nginx
 curl -v localhost:8989
