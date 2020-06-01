@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -e
 #set -x
+if [[ $(id -u ${USER}) -eq 0 ]]; then
+  echo "Please don't run this script under the root user!"
+  exit 1
+fi
+
 exec > /tmp/docker-virtualbox.log
 exec 2>&1
 
