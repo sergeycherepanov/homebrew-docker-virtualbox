@@ -4,13 +4,21 @@ This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can 
 ## Installation
 
 Allow mac users to mount nfs shares without root password:
-> Only this command requires root permissions, next should be run under your user.
+> WARNING: Only this commands requires root permissions, all next should be run under your user. ** 
+
+Ensure the exports file. 
+```bash
+sudo touch /etc/exports
+```
+Add sudoers. 
 ```bash
 echo "%staff ALL=(ALL) NOPASSWD: /sbin/nfsd
 %staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
 %staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/exports
 %staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/nfs.conf" | sudo tee /etc/sudoers.d/docker-machine-nfs
 ```
+
+> Reboot your system to be sure that sudoers applied
 
 Install the Virtualbox from the Oracle website or via the homebrew:
 ```bash
