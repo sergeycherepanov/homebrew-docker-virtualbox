@@ -4,9 +4,9 @@ This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can 
 ## Installation
 
 Allow mac users to mount nfs shares without root password:
-> WARNING: Only this commands requires root permissions, all next should be run under your user. ** 
+> WARNING: Only this commands requires root permissions, all next should be run under your user
 
-Ensure the exports file. 
+Ensure the exports file
 ```bash
 sudo touch /etc/exports
 ```
