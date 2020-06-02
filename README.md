@@ -3,24 +3,6 @@ This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can 
 
 ## Installation
 
-### Configure the docker-machine-nfs requirements
-> WARNING: Only this commands requires root permissions, all next should be run under your user
-
-Ensure the NFS exports file exists
-```bash
-sudo touch /etc/exports
-```
-
-Allow the staff group to configure NFS shares without password prompt  
-```bash
-echo "%staff ALL=(ALL) NOPASSWD: /sbin/nfsd
-%staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
-%staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/exports
-%staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/nfs.conf" | sudo tee /etc/sudoers.d/docker-machine-nfs
-```
-
-> Reboot your system to be sure that sudoers applied
-
 ### Install the Virtualbox from the Oracle website or via the homebrew:
 ```bash
 brew cask install virtualbox
@@ -32,6 +14,28 @@ brew cask install virtualbox
 brew tap sergeycherepanov/docker-virtualbox
 brew install docker-virtualbox
 ```
+
+### Configure the docker-virtualbox requirements
+> WARNING: Only this commands requires root permissions, all next should be run under your user
+
+Ensure the NFS exports file exists
+```bash
+sudo touch /etc/exports
+```
+
+Allow the staff group to configure NFS shares and ip balancer without password prompt  
+```bash
+sudo tee /etc/sudoers.d/docker-machine-nfs  <<SUDOERS
+%staff ALL=(ALL) NOPASSWD: /sbin/nfsd
+%staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
+%staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/exports
+%staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/nfs.conf
+%staff ALL=(ALL) NOPASSWD: $(brew --prefix docker-virtualbox)/bin/gobetween
+SUDOERS
+```
+
+> Reboot your system to be sure that sudoers applied
+
 
 ### Configure the environment
 
