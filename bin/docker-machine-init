@@ -107,7 +107,7 @@ ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
 #}
 
 echo "===> Starting Gobetween"
-sudo sh -c "${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml > ${LOGDIR}/docker-virtualbox-gobetween.log 2>&1" &
+sudo ${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml > ${LOGDIR}/docker-virtualbox-gobetween.log 2>&1 &
 echo $! > /tmp/docker-virtualbox-gobetween.pid
 
 # setup env
