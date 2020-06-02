@@ -3,7 +3,7 @@ require 'formula'
 class DockerVirtualbox < Formula
   url "https://github.com/sergeycherepanov/homebrew-docker-virtualbox.git", :using => :git
   version "0.0.3"
-  revision 5
+  revision 6
 
   depends_on 'curl'
   depends_on 'jq'
