@@ -5,8 +5,9 @@ if [[ $(id -u ${USER}) -eq 0 ]]; then
   echo "Please don't run this script under the root user!"
   exit 1
 fi
+LOGDIR="/tmp";
 
-exec > /tmp/docker-virtualbox.log
+exec > ${LOGDIR}/docker-virtualbox.log
 exec 2>&1
 
 START_TIME=$(date +%s)
@@ -106,7 +107,7 @@ ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
 #}
 
 echo "===> Starting Gobetween"
-sudo sh -c "${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml" &
+sudo sh -c "${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml > ${LOGDIR}/docker-virtualbox-gobetween.log 2>&1" &
 echo $! > /tmp/docker-virtualbox-gobetween.pid
 
 # setup env
