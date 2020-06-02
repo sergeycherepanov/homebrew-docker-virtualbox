@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-#set -x
+set -x
 if [[ $(id -u ${USER}) -eq 0 ]]; then
   echo "Please don't run this script under the root user!"
   exit 1
@@ -18,12 +18,29 @@ else
 fi
 
 PATH="${PATH}:${BREW_BIN}"
+GOBETWEEN_BIN=$(brew --prefix docker-virtualbox)/bin/gobetween
 TERMINAL_NOTIFIER_BIN="$(brew --prefix terminal-notifier)/bin/terminal-notifier -appIcon $(brew --prefix docker-virtualbox)/djocker.png"
+JQ_BIN="$(brew --prefix jq)/bin/jq"
 DOCKER_MACHINE_BIN=$(brew --prefix docker-machine)/bin/docker-machine
 DOCKER_MACHINE_NFS_BIN=$(brew --prefix docker-machine-nfs)/bin/docker-machine-nfs
 
 DOCKER_MACHINE_DRIVER=${DOCKER_DRIVER-virtualbox}
 DOCKER_MACHINE_MACHINE_NAME=${DOCKER_MACHINE_NAME-docker}
+
+function stop()
+{
+    echo "===> Stopping gobetween"
+    [[ -f /tmp/docker-virtualbox.env ]] && rm /tmp/docker-virtualbox.env
+    echo "===> Stopping docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
+    ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Stopping virtual machine: '${DOCKER_MACHINE_MACHINE_NAME}'"
+    ${DOCKER_MACHINE_BIN} stop ${DOCKER_MACHINE_MACHINE_NAME}
+    exit 0
+}
+
+trap stop SIGKILL
+trap stop SIGTERM
+trap stop SIGINT
+
 
 ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Initialize..."
 sleep 1
@@ -80,28 +97,28 @@ ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Configuring NFS mo
 
 ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
 
+#[[ -f /tmp/docker-virtualbox-gobetween.pid ]] && {
+#    echo "===> Found a previous Gobetween pid file, trying to kill them"
+#    kill -9 $(cat /tmp/docker-virtualbox-gobetween.pid) || {
+#        echo "--> Nothing to kill"
+#    }
+#    rm /tmp/docker-virtualbox-gobetween.pid
+#}
+
+echo "===> Starting Gobetween"
+sudo sh -c "${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml" &
+echo $! > /tmp/docker-virtualbox-gobetween.pid
+
 # setup env
 echo "export DOCKER_CLI_BIN_PATH=\"$(brew --prefix docker-cli)/bin/docker\"" > /tmp/docker-virtualbox.env
 echo "export DOCKER_COMPOSE_BIN_PATH=\"$(brew --prefix docker-compose)/bin/docker-compose\"" >> /tmp/docker-virtualbox.env
-echo "export DOCKER_MACHINE_PF_BIN_PATH=\"$(brew --prefix docker-machine-pf)/bin/pf\"" >> /tmp/docker-virtualbox.env
 echo "export DOCKER_MACHINE_IP=\"$(${DOCKER_MACHINE_BIN} ip ${DOCKER_MACHINE_MACHINE_NAME})\"" >> /tmp/docker-virtualbox.env
 ${DOCKER_MACHINE_BIN} env ${DOCKER_MACHINE_MACHINE_NAME} >> /tmp/docker-virtualbox.env
 ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' ready for work"
-function stop()
-{
-    rm /tmp/docker-virtualbox.env
-    echo "===> Stopping docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
-    ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Stopping virtual machine: '${DOCKER_MACHINE_MACHINE_NAME}'"
-    ${DOCKER_MACHINE_BIN} stop ${DOCKER_MACHINE_MACHINE_NAME}
-    ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' stopped"
-    exit 0
-}
+
 
 source /tmp/docker-virtualbox.env
 
-trap stop SIGKILL
-trap stop SIGTERM
-trap stop SIGINT
 #set -x
 [[ -f /tmp/docker-virtualbox.starting ]] && rm /tmp/docker-virtualbox.starting
 while read -r event;
@@ -109,6 +126,7 @@ do
     subject=$(echo $event | awk '{ print $2 }')
     action=$(echo $event | awk '{ print $3 }')
     subjectid=$(echo $event | awk '{ print $4 }')
+    subjectid_short=$(echo $subjectid | cut -c -8)
     if [[ "container" == ${subject} ]]; then
         case $action in
           start)
@@ -116,9 +134,33 @@ do
             [[ -z ${ports} ]] || {
                 for port in $ports;  do
                     echo "Enabling port forwarding: ${port} -> ${DOCKER_MACHINE_IP}:${port}"
-                    >&2 ${DOCKER_MACHINE_PF_BIN_PATH} ${port} -e ${DOCKER_MACHINE_NAME}
+                    >&2 curl -X POST --data "@-" http://127.0.0.1:8181/servers/${subjectid_short}_${port} <<JSON_BODY
+{
+  "backend_connection_timeout": "2s",
+  "backend_idle_timeout": "1m",
+  "balance": "weight",
+  "bind": ":${port}",
+  "client_idle_timeout": "1m",
+  "max_connections": 10000,
+  "protocol": "tcp",
+  "discovery": {
+    "kind": "static",
+    "static_list": [
+      "${DOCKER_MACHINE_IP}:${port} weight=1"
+    ]
+  }
+}
+JSON_BODY
                 done
             }
+            ;;
+          kill)
+            servers=$(curl http://127.0.0.1:8181/servers | ${JQ_BIN} -r '. | keys | .[]' | grep ${subjectid_short})
+            for server in $servers;  do
+                echo "Disabling port forwarding for: ${server}"
+                curl -X DELETE http://127.0.0.1:8181/servers/${server}
+            done
+
             ;;
           *)
             # skipping
