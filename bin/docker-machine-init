@@ -30,7 +30,6 @@ DOCKER_MACHINE_MACHINE_NAME=${DOCKER_MACHINE_NAME-docker}
 
 function stop()
 {
-    echo "===> Stopping gobetween"
     [[ -f /tmp/docker-virtualbox.env ]] && rm /tmp/docker-virtualbox.env
     echo "===> Stopping docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
     ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Stopping virtual machine: '${DOCKER_MACHINE_MACHINE_NAME}'"
