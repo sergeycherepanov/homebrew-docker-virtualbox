@@ -90,10 +90,3 @@ To setup environment for 3rd party tools (`ctop` as example)
 source /tmp/docker-virtualbox.env
 ```
 
-Manual port forwarding 
-> In some cases the forwarding rule can be broken, and you need to configure it again manually
-```bash
-pf 8989 -e docker
-```
-## Know issues
-* Cisco Anyconnect VPN brokes ip filter rules on the local interface. Need to replace the `pf` with some ip balancer (`traefik` as example).
