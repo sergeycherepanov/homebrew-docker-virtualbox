@@ -47,7 +47,7 @@ brew link --force --overwrite docker-virtualbox
 Otherwise configure the PATH variable
 ```bash
 # For the bash
-echo "export PATH=\"$(brew --prefix docker-virtualbox)/bin:\$PATH\"" >> ~/.bashrc
+echo "export PATH=\"$(brew --prefix docker-virtualbox)/bin:\$PATH\"" >> ~/.bash_profile
 # For the zsh
 echo "export PATH=\"$(brew --prefix docker-virtualbox)/bin:\$PATH\"" >> ~/.zshrc
 ```
