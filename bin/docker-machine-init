@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-set -x
+#set -x
 if [[ $(id -u ${USER}) -eq 0 ]]; then
   echo "Please don't run this script under the root user!"
   exit 1
@@ -97,13 +97,13 @@ ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Configuring NFS mo
 
 ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
 
-#[[ -f /tmp/docker-virtualbox-gobetween.pid ]] && {
-#    echo "===> Found a previous Gobetween pid file, trying to kill them"
-#    kill -9 $(cat /tmp/docker-virtualbox-gobetween.pid) || {
-#        echo "--> Nothing to kill"
-#    }
-#    rm /tmp/docker-virtualbox-gobetween.pid
-#}
+[[ $1 == "initialize" ]] && {
+    echo "Docker ready for use!"
+    echo "Please start the service by following command:"
+    echo "    brew services start docker-virtualbox"
+    echo ""
+    exit 0
+}
 
 echo "===> Starting Gobetween"
 sudo ${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml > ${LOGDIR}/docker-virtualbox-gobetween.log 2>&1 &

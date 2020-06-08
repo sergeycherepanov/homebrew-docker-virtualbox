@@ -58,9 +58,15 @@ exec $SHELL
 ```
 
 ### Start the docker-virtualbox service
+In the first run according to the permissions policy you need to run it manually and approve permissions.  
 
-> It should creates and configure the fm
-> The live log will be available in `/tmp/docker-virtualbox.log`
+> It should download, create and configure the virtual machine  
+```bash
+docker-machine-init initialize
+```
+
+When it will be finished you are ready to enable the service
+> The log file will be always available in `/tmp/docker-virtualbox.log`. 
 ```bash
 brew services start docker-virtualbox 
 ```
