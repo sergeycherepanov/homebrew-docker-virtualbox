@@ -112,7 +112,7 @@ ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
 }
 
 echo "===> Starting Gobetween..."
-[[ -f /tmp/docker-virtualbox-gobetween.pid ]] && ps -p $(cat /tmp/docker-virtualbox-gobetween.pid) && {
+[[ -f /tmp/docker-virtualbox-gobetween.pid ]] && ps -p $(cat /tmp/docker-virtualbox-gobetween.pid) > /dev/null && {
     echo "---> Gobetween already started, disabling outdated port forwarding..."
     servers=$(curl --silent http://127.0.0.1:8181/servers | ${JQ_BIN} -r '. | keys | .[]')
     for server in $servers;  do
