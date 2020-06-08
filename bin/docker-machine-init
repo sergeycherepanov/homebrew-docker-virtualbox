@@ -7,8 +7,10 @@ if [[ $(id -u ${USER}) -eq 0 ]]; then
 fi
 LOGDIR="/tmp";
 
-exec > ${LOGDIR}/docker-virtualbox.log
-exec 2>&1
+[[ $1 != "initialize" ]] && {
+    exec > ${LOGDIR}/docker-virtualbox.log
+    exec 2>&1
+}
 
 START_TIME=$(date +%s)
 
