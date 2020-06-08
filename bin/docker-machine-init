@@ -111,9 +111,19 @@ ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
     exit 0
 }
 
-echo "===> Starting Gobetween"
-sudo ${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml > ${LOGDIR}/docker-virtualbox-gobetween.log 2>&1 &
-echo $! > /tmp/docker-virtualbox-gobetween.pid
+echo "===> Starting Gobetween..."
+[[ -f /tmp/docker-virtualbox-gobetween.pid ]] && [[ ps -p $(cat /tmp/docker-virtualbox-gobetween.pid) ]] && {
+    echo "---> Gobetween already started, disabling outdated port forwarding..."
+    servers=$(curl --silent http://127.0.0.1:8181/servers | ${JQ_BIN} -r '. | keys | .[]')
+    for server in $servers;  do
+        echo "Disabling port forwarding for: ${server}"
+        curl --silent -X DELETE http://127.0.0.1:8181/servers/${server}
+    done
+} || {
+    sudo ${GOBETWEEN_BIN} -c $(brew --prefix)/etc/docker-virtualbox/gobetween.toml > ${LOGDIR}/docker-virtualbox-gobetween.log 2>&1 &
+    echo $! > /tmp/docker-virtualbox-gobetween.pid
+    echo "---> Gobetween started"
+}
 
 # setup env
 echo "export DOCKER_CLI_BIN_PATH=\"$(brew --prefix docker-cli)/bin/docker\"" > /tmp/docker-virtualbox.env
@@ -125,7 +135,7 @@ ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '$
 
 source /tmp/docker-virtualbox.env
 
-#set -x
+echo "===> Listen for events..."
 [[ -f /tmp/docker-virtualbox.starting ]] && rm /tmp/docker-virtualbox.starting
 while read -r event;
 do
@@ -140,7 +150,7 @@ do
             [[ -z ${ports} ]] || {
                 for port in $ports;  do
                     echo "Enabling port forwarding: ${port} -> ${DOCKER_MACHINE_IP}:${port}"
-                    >&2 curl -X POST --data "@-" http://127.0.0.1:8181/servers/${subjectid_short}_${port} <<JSON_BODY
+                    >&2 curl --silent -X POST --data "@-" http://127.0.0.1:8181/servers/${subjectid_short}_${port} <<JSON_BODY
 {
   "backend_connection_timeout": "2s",
   "backend_idle_timeout": "1m",
@@ -161,10 +171,10 @@ JSON_BODY
             }
             ;;
           kill)
-            servers=$(curl http://127.0.0.1:8181/servers | ${JQ_BIN} -r '. | keys | .[]' | grep ${subjectid_short})
+            servers=$(curl --silent http://127.0.0.1:8181/servers | ${JQ_BIN} -r '. | keys | .[]' | grep ${subjectid_short})
             for server in $servers;  do
                 echo "Disabling port forwarding for: ${server}"
-                curl -X DELETE http://127.0.0.1:8181/servers/${server}
+                curl --silent -X DELETE http://127.0.0.1:8181/servers/${server}
             done
 
             ;;
