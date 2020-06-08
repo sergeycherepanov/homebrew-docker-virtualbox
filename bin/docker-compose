@@ -21,7 +21,7 @@ fi
     echo -e ""
     echo -e "\033[0mYou have to start it by following command:"
     echo -e ""
-    echo -e "\033[96mbrew services start docker-virtualbox "
+    echo -e "\033[96mbrew services start docker-virtualbox"
     echo -e "\033[0m"
     exit 1
 }
