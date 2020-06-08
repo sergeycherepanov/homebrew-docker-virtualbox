@@ -101,7 +101,7 @@ ${DOCKER_MACHINE_NFS_BIN} ${DOCKER_MACHINE_MACHINE_NAME}
 
 [[ $1 == "initialize" ]] && {
     echo ""
-    echo -e "\033[91m>>>>> \e[92m\!\!\! CONGRATULATION \!\!\!  DOCKER READY TO USE\! \033[91m<<<<<"
+    echo -e "\033[91m>>>>> \033[92m *** CONGRATULATION *** DOCKER READY TO USE *** \033[91m<<<<<"
     echo -e "\033[0m"
     echo "Please start the service by following command:"
     echo -e "\033[0m"
