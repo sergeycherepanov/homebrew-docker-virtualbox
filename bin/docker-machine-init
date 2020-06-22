@@ -128,7 +128,7 @@ echo "===> Starting Gobetween..."
 echo "export DOCKER_CLI_BIN_PATH=\"$(brew --prefix docker-cli)/bin/docker\"" > /tmp/docker-virtualbox.env
 echo "export DOCKER_COMPOSE_BIN_PATH=\"$(brew --prefix docker-compose)/bin/docker-compose\"" >> /tmp/docker-virtualbox.env
 echo "export DOCKER_MACHINE_IP=\"$(${DOCKER_MACHINE_BIN} ip ${DOCKER_MACHINE_MACHINE_NAME})\"" >> /tmp/docker-virtualbox.env
-${DOCKER_MACHINE_BIN} env ${DOCKER_MACHINE_MACHINE_NAME} >> /tmp/docker-virtualbox.env
+${DOCKER_MACHINE_BIN} env ${DOCKER_MACHINE_MACHINE_NAME} --shell bash >> /tmp/docker-virtualbox.env
 ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' ready for work"
 
 
