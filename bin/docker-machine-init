@@ -48,10 +48,9 @@ ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Initialize..."
 sleep 1
 
 if [[ -z ${DOCKER_MACHINE_DISK_SIZE} ]]; then
-    if [[ $(df | grep '\/$' | awk '{print $2/1000}') -gt 200000 ]]; then
+    DOCKER_MACHINE_DISK_SIZE="16000"
+    if [[ $(df --block-size=1073741824 | grep '\/$' | awk '{print $2}') -gt 200 ]]; then
         DOCKER_MACHINE_DISK_SIZE="32000"
-    else
-        DOCKER_MACHINE_DISK_SIZE="16000"
     fi
 fi
 
