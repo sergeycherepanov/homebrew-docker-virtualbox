@@ -3,7 +3,7 @@ This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can 
 
 ## Installation
 
-### Install the Virtualbox from the Oracle website or via the homebrew:
+### Install Virtualbox from Oracle website or via the homebrew:
 ```bash
 brew cask install virtualbox
 ```
