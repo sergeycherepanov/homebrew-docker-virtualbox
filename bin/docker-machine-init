@@ -49,7 +49,7 @@ sleep 1
 
 if [[ -z ${DOCKER_MACHINE_DISK_SIZE} ]]; then
     DOCKER_MACHINE_DISK_SIZE="16000"
-    if [[ $(df --block-size=1073741824 | grep '\/$' | awk '{print $2}') -gt 200 ]]; then
+    if [[ $($(brew --prefix coreutils)/libexec/gnubin/df --block-size=1073741824 | grep '\/$' | awk '{print $2}') -gt 200 ]]; then
         DOCKER_MACHINE_DISK_SIZE="32000"
     fi
 fi
