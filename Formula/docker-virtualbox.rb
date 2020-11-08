@@ -3,7 +3,7 @@ require 'formula'
 class DockerVirtualbox < Formula
   url "https://github.com/sergeycherepanov/homebrew-docker-virtualbox.git", :using => :git
   version "0.0.3"
-  revision 13
+  revision 14
 
   depends_on 'coreutils'
   depends_on 'curl'
@@ -38,6 +38,20 @@ class DockerVirtualbox < Formula
     bin.install "bin/docker-compose"
     bin.install "bin/docker-machine-init"
     prefix.install "assets/djocker.png"
+  end
+
+  postflight do
+      system_command 'touch', args: ['/etc/exports'], sudo: true
+
+      system_command 'tee',
+                     args: ['/etc/sudoers.d/docker-machine-nfs', "<<SUDOERS
+                                                                   %staff ALL=(ALL) NOPASSWD: /sbin/nfsd
+                                                                   %staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
+                                                                   %staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/exports
+                                                                   %staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/nfs.conf
+                                                                   %staff ALL=(ALL) NOPASSWD: #{Formula["docker-virtualbox"].opt_prefix}/bin/gobetween
+                                                                   SUDOERS"],
+                     sudo: true
   end
 
   def caveats

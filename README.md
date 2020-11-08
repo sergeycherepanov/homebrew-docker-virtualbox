@@ -25,12 +25,12 @@ sudo touch /etc/exports
 
 Allow the staff group to configure NFS shares and ip balancer without password prompt  
 ```bash
-sudo tee /etc/sudoers.d/docker-machine-nfs  <<SUDOERS
+sudo tee /etc/sudoers.d/docker-machine-nfs <<SUDOERS
 %staff ALL=(ALL) NOPASSWD: /sbin/nfsd
 %staff ALL=(ALL) NOPASSWD: /bin/cp /etc/nfs.conf /etc/nfs.conf.bak
 %staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/exports
 %staff ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/nfs.conf
-%staff ALL=(ALL) NOPASSWD: $(brew --prefix docker-virtualbox)/bin/gobetween
+%staff ALL=(ALL) NOPASSWD: $(brew --prefix)/opt/docker-virtualbox/bin/gobetween
 SUDOERS
 ```
 

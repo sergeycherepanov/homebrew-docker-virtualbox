@@ -9,5 +9,5 @@ class DockerMachinePf < Formula
 
   def install
       bin.install "pf"
-    end
+  end
 end
