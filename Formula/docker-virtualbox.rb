@@ -3,7 +3,7 @@ require 'formula'
 class DockerVirtualbox < Formula
   url "https://github.com/sergeycherepanov/homebrew-docker-virtualbox.git", :using => :git
   version "0.0.3"
-  revision 12
+  revision 13
 
   depends_on 'coreutils'
   depends_on 'curl'
@@ -18,8 +18,8 @@ class DockerVirtualbox < Formula
   keg_only "this package may conflict with official docker client"
 
   resource "gobetween" do
-    url "https://github.com/yyyar/gobetween/releases/download/0.7.0/gobetween_0.7.0_darwin_amd64.zip"
-    sha256 "f679478b4ec13cce19309fdaee0a03da8940796dcf2a6a01dce2a8f9c0d9b9b0"
+    url "https://github.com/yyyar/gobetween/releases/download/0.8.0/gobetween_0.8.0_darwin_amd64.zip"
+    sha256 "15efec9cef9dc01c4e195042df62def95f189090e470678d5b6f024afa71e1b0"
   end
 
   def install

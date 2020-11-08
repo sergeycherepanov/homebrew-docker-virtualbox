@@ -36,7 +36,6 @@ SUDOERS
 
 > Reboot your system to be sure that sudoers applied
 
-
 ### Configure the environment
 
 If you didn't install Docker for Mac you can link binaries instead of PATH update
