@@ -1,15 +1,13 @@
 # Homebrew Docker Virtualbox
-This formulas resolves the Docker issue on AMD based MacOS (Ryzentosh). But can be used on any Mac.
+This formula resolves the Docker issue on AMD based MacOS (Ryzentosh). Also can be used on any Mac.
 
 ## Installation
 
-### Install Virtualbox from Oracle website or via Homebrew:
-```bash
-brew install virtualbox
-```
+### Install Virtualbox from Oracle website
+> Please don't forget to remove all previous installations
+https://www.virtualbox.org/wiki/Downloads
 
 ### Install the docker-virtualbox via Homebrew
-
 ```bash
 brew tap sergeycherepanov/docker-virtualbox
 brew install docker-virtualbox
@@ -23,7 +21,7 @@ Ensure the NFS exports file exists
 sudo touch /etc/exports
 ```
 
-Allow the staff group to configure NFS shares and ip balancer without password prompt  
+Allow the staff group to configure NFS shares and the IP balancer works without password prompt  
 ```bash
 sudo tee /etc/sudoers.d/docker-machine-nfs <<SUDOERS
 %staff ALL=(ALL) NOPASSWD: /sbin/nfsd
