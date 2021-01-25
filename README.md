@@ -4,8 +4,8 @@ This formula resolves the Docker issue on AMD based MacOS (Ryzentosh). Also can 
 ## Installation
 
 ### Install Virtualbox from Oracle website
-> Please don't forget to remove all previous installations
-https://www.virtualbox.org/wiki/Downloads
+https://www.virtualbox.org/wiki/Downloads. 
+> Please don't forget to remove all previous installations. 
 
 ### Install the docker-virtualbox via Homebrew
 ```bash
