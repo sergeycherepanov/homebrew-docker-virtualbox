@@ -15,17 +15,21 @@ if [[ -f /tmp/docker-virtualbox.starting ]]; then
     done
 fi
 
-[[ -f /tmp/docker-virtualbox.env ]] || {
+[[ -f /tmp/docker-virtualbox.env && -f /tmp/docker-virtualbox-machine.env ]] || {
     echo -e "\033[91m"
     echo -e "\033[91mLooks like docker-virtualbox doesn't work"
     echo -e ""
     echo -e "\033[0mYou have to start it by following command:"
     echo -e ""
-    echo -e "\033[96mbrew services start docker-virtualbox"
+    echo -e "\033[96mbrew services start docker-virtualbox "
     echo -e "\033[0m"
     exit 1
 }
 
 source /tmp/docker-virtualbox.env
+
+[[ -z "${DOCKER_HOST}" ]] && { 
+    source /tmp/docker-virtualbox-machine.env
+}
 
 exec ${DOCKER_COMPOSE_BIN_PATH} "$@"
