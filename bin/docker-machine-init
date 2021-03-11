@@ -35,6 +35,7 @@ DOCKER_MACHINE_MACHINE_NAME=${DOCKER_MACHINE_NAME-docker}
 function stop()
 {
     [[ -f /tmp/docker-virtualbox.env ]] && rm /tmp/docker-virtualbox.env
+    [[ -f /tmp/docker-virtualbox-machine.env ]] && rm /tmp/docker-virtualbox-machine.env
     echo "===> Stopping docker machine: ${DOCKER_MACHINE_MACHINE_NAME}"
     ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Stopping virtual machine: '${DOCKER_MACHINE_MACHINE_NAME}'"
     ${DOCKER_MACHINE_BIN} stop ${DOCKER_MACHINE_MACHINE_NAME}
@@ -130,11 +131,12 @@ echo "===> Starting Gobetween..."
 echo "export DOCKER_CLI_BIN_PATH=\"$(brew --prefix docker-cli)/bin/docker\"" > /tmp/docker-virtualbox.env
 echo "export DOCKER_COMPOSE_BIN_PATH=\"$(brew --prefix docker-compose)/bin/docker-compose\"" >> /tmp/docker-virtualbox.env
 echo "export DOCKER_MACHINE_IP=\"$(${DOCKER_MACHINE_BIN} ip ${DOCKER_MACHINE_MACHINE_NAME})\"" >> /tmp/docker-virtualbox.env
-${DOCKER_MACHINE_BIN} env ${DOCKER_MACHINE_MACHINE_NAME} --shell bash >> /tmp/docker-virtualbox.env
+${DOCKER_MACHINE_BIN} env ${DOCKER_MACHINE_MACHINE_NAME} --shell bash >> /tmp/docker-virtualbox-machine.env
 ${TERMINAL_NOTIFIER_BIN} -title "Docker Virtualbox" -message "Virtual machine '${DOCKER_MACHINE_MACHINE_NAME}' ready for work"
 
 
 source /tmp/docker-virtualbox.env
+source /tmp/docker-virtualbox-machine.env
 
 echo ""
 echo "===> Listen for events..."

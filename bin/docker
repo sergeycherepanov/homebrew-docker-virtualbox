@@ -15,7 +15,7 @@ if [[ -f /tmp/docker-virtualbox.starting ]]; then
     done
 fi
 
-[[ -f /tmp/docker-virtualbox.env ]] || {
+[[ -f /tmp/docker-virtualbox.env && -f /tmp/docker-virtualbox-machine.env ]] || {
     echo -e "\033[91m"
     echo -e "\033[91mLooks like docker-virtualbox doesn't work"
     echo -e ""
@@ -27,5 +27,9 @@ fi
 }
 
 source /tmp/docker-virtualbox.env
+
+[[ -z "${DOCKER_HOST}" ]] && { 
+    source /tmp/docker-virtualbox-machine.env
+}
 
 exec ${DOCKER_CLI_BIN_PATH} "$@"
