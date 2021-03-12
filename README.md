@@ -21,7 +21,7 @@ Ensure the NFS exports file exists
 sudo touch /etc/exports
 ```
 
-Allow the staff group to configure NFS shares and the IP balancer works without password prompt  
+Allow the staff group to configure NFS shares and run the balancer without a password prompt 
 ```bash
 sudo tee /etc/sudoers.d/docker-machine-nfs <<SUDOERS
 %staff ALL=(ALL) NOPASSWD: /sbin/nfsd
