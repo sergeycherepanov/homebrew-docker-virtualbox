@@ -78,6 +78,11 @@ curl -v localhost:8989
 
 ## Additional information
 
+Read the log when the docker doesn't work properly
+```bash
+tail -n 1000 -f /tmp/docker-virtualbox.log
+```
+
 SSH connection to the docker-machine
 ```bash
 docker-machine ssh docker
