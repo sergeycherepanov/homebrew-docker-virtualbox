@@ -93,3 +93,6 @@ To setup environment for 3rd party tools (`ctop` as example)
 source /tmp/docker-virtualbox.env
 ```
 
+## Known issues
+1. The system won't sleep when the NFS server runs
+2. The port forwarding doesn't work for UDP proto (improvement needed)
