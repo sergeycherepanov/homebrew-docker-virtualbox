@@ -93,7 +93,7 @@ To stop the service just run
 brew services stop docker-virtualbox 
 ```
 
-To setup environment for 3rd party tools (`ctop` as example)
+To setup environment for 3rd party tools ([`ctop`](https://github.com/bcicen/ctop) as example)
 ```
 source /tmp/docker-virtualbox.env
 ```
