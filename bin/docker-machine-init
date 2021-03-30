@@ -27,7 +27,7 @@ GOBETWEEN_BIN=$(brew --prefix)/opt/docker-virtualbox/bin/gobetween
 TERMINAL_NOTIFIER_BIN="$(brew --prefix terminal-notifier)/bin/terminal-notifier -appIcon $(brew --prefix docker-virtualbox)/djocker.png"
 JQ_BIN="$(brew --prefix jq)/bin/jq"
 DOCKER_MACHINE_BIN=$(brew --prefix docker-machine)/bin/docker-machine
-DOCKER_MACHINE_NFS_BIN=$(brew --prefix docker-machine-nfs)/bin/docker-machine-nfs
+DOCKER_MACHINE_NFS_BIN=$(brew --prefix docker-machine-nfs-generic)/bin/docker-machine-nfs-generic
 
 DOCKER_MACHINE_DRIVER=${DOCKER_DRIVER-virtualbox}
 DOCKER_MACHINE_MACHINE_NAME=${DOCKER_MACHINE_NAME-docker}
