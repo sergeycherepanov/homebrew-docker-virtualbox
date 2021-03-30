@@ -61,7 +61,7 @@ In the first run according to the permissions policy you need to run it manually
 ```bash
 docker-machine-init initialize
 ```
-> This is will download, create and configure the VirtualBox based machine  
+> This is will download, create and configure the VirtualBox based machine if no machine was configured before
 
 
 ### Start the docker-virtualbox service
