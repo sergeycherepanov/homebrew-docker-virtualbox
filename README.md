@@ -105,6 +105,7 @@ brew services stop docker-virtualbox
 To setup environment for 3rd party tools ([`ctop`](https://github.com/bcicen/ctop) as example)
 ```
 source /tmp/docker-virtualbox.env
+source /tmp/docker-virtualbox-machine.env
 ```
 
 ## Known issues
