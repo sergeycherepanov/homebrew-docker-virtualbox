@@ -54,15 +54,17 @@ Reload the shell
 exec $SHELL
 ```
 
-### Start the docker-virtualbox service
+### Initialize the docker machine
 In the first run according to the permissions policy you need to run it manually and approve permissions.  
 
-> It should download, create and configure the virtual machine  
 ```bash
 docker-machine-init initialize
 ```
+> It should download, create and configure the virtual machine  
 
-When it will be finished you are ready to enable the service
+
+### Start the docker-virtualbox service
+When initialization will be finished you are ready to enable the service
 > The log file will be always available in `/tmp/docker-virtualbox.log`. 
 ```bash
 brew services start docker-virtualbox 
@@ -77,6 +79,12 @@ curl -v localhost:8989
 ```
 
 ## Additional information
+
+If you don't want to use the VirtualBox as docker-machine driver you need to create a machine manually before initialization by similar command:
+```bash
+docker-machine create --driver generic --generic-ip-address=192.168.24.108 --generic-ssh-user=developer --generic-ssh-key=$HOME/.ssh/id_rsa docker
+```
+> Please note the generic driver supports only Debian based Linux as the target system. For more information read the [documentation](https://github.com/sergeycherepanov/docker-machine-nfs/blob/master/README.md)
 
 Read the log when the docker doesn't work properly
 ```bash
