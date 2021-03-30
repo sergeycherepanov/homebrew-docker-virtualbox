@@ -2,7 +2,7 @@ require 'formula'
 
 class DockerVirtualbox < Formula
   url "https://github.com/sergeycherepanov/homebrew-docker-virtualbox.git", :using => :git
-  version "0.0.5"
+  version "0.0.6"
   revision 1
 
   depends_on 'coreutils'
@@ -13,7 +13,7 @@ class DockerVirtualbox < Formula
   depends_on 'docker-compose'
   depends_on 'docker-credential-helper'
   depends_on 'docker-machine'
-  depends_on 'docker-machine-nfs'
+  depends_on 'docker-machine-nfs-generic'
 
   keg_only "this package may conflict with official docker client"
 
