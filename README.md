@@ -85,7 +85,7 @@ If you don't want to use the VirtualBox as docker-machine driver you need to cre
 ```bash
 docker-machine create --driver generic --generic-ip-address=192.168.24.108 --generic-ssh-user=developer --generic-ssh-key=$HOME/.ssh/id_rsa docker
 ```
-> Please note the generic driver supports only Debian based Linux as the target system. For more information read the [documentation](https://github.com/sergeycherepanov/docker-machine-nfs/blob/master/README.md)
+> Please note the docker-machine-nfs plugin supports only Debian based Linux as the target system. For more information read the [documentation](https://github.com/sergeycherepanov/docker-machine-nfs/blob/master/README.md)
 
 Read the log when the docker doesn't work properly
 ```bash
