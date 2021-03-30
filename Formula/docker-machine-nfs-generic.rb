@@ -1,4 +1,4 @@
-class DockerMachineNfs < Formula
+class DockerMachineNfsGeneric < Formula
   desc "Activates NFS on docker-machine (with generic driver support)"
   homepage "https://github.com/sergeycherepanov/docker-machine-nfs"
   url "https://github.com/sergeycherepanov/docker-machine-nfs/archive/0.5.4.1.tar.gz"
