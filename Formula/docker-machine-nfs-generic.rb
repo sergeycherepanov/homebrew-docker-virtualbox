@@ -4,6 +4,8 @@ class DockerMachineNfs < Formula
   url "https://github.com/sergeycherepanov/docker-machine-nfs/archive/0.5.4.1.tar.gz"
   sha256 "cec306b86a9b1d3e52768a813a40ab833a1f95becbf6e07b1aea6c4efc60c611"
   license "MIT"
+  version "0.5.4"
+  revision 1
 
   bottle :unneeded
 
