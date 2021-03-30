@@ -139,6 +139,36 @@ source /tmp/docker-virtualbox.env
 source /tmp/docker-virtualbox-machine.env
 
 echo ""
+echo "===> Configuring port forwarding for alrady running containers..."
+while read -r subjectid
+do
+    ports="$(${DOCKER_CLI_BIN_PATH} inspect -f '{{range $p, $conf := .NetworkSettings.Ports }} {{ if $conf}} {{$conf}} {{end}} {{end}}' "${subjectid}" | sed -nE 's:\[\{[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[^0-9]*([0-9]{1,})\}\]:\1:pg' | xargs echo -n)"
+    [[ -z ${ports} ]] || {
+        for port in $ports;  do
+          echo ""
+          echo "Enabling port forwarding: ${port} -> ${DOCKER_MACHINE_IP}:${port}"
+          >&2 curl --silent -X POST --data "@-" http://127.0.0.1:8181/servers/${subjectid_short}_${port} <<JSON_BODY
+{
+  "backend_connection_timeout": "2s",
+  "backend_idle_timeout": "1m",
+  "balance": "weight",
+  "bind": ":${port}",
+  "client_idle_timeout": "1m",
+  "max_connections": 10000,
+  "protocol": "tcp",
+  "discovery": {
+    "kind": "static",
+    "static_list": [
+      "${DOCKER_MACHINE_IP}:${port} weight=1"
+    ]
+  }
+}
+JSON_BODY
+        done
+    }
+done < <(${DOCKER_CLI_BIN_PATH} ps | tail -n +2 | awk '{ print $1 }')
+
+echo ""
 echo "===> Listen for events..."
 [[ -f /tmp/docker-virtualbox.starting ]] && rm /tmp/docker-virtualbox.starting
 while read -r event;
