@@ -1,11 +1,12 @@
-# Homebrew Docker Virtualbox
+# Homebrew Docker Virtualbox (But not only VirtualBox)
 This formula resolves the Docker issue on AMD based MacOS (Ryzentosh). Also can be used on any Mac.
 
 ## Installation
 
 ### Install Virtualbox from Oracle website
 https://www.virtualbox.org/wiki/Downloads. 
-> Please don't forget to remove all previous installations. 
+> Please don't forget to remove all previous installations.  
+> This step required only if you want to use VirtualBox driver, otherwise see below how to start with another driver. 
 
 ### Install the docker-virtualbox via Homebrew
 ```bash
@@ -60,7 +61,7 @@ In the first run according to the permissions policy you need to run it manually
 ```bash
 docker-machine-init initialize
 ```
-> It should download, create and configure the virtual machine  
+> This is will download, create and configure the VirtualBox based machine  
 
 
 ### Start the docker-virtualbox service
