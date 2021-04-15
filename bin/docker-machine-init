@@ -16,7 +16,9 @@ LOGDIR="/tmp";
 
 START_TIME=$(date +%s)
 
-if [[ "Darwin" == "$(uname)" ]]; then
+if [[ -n "${BREW_BIN}" ]]; then
+    BREW_BIN=$BREW_BIN
+elif [[ "Darwin" == "$(uname)" ]]; then
     BREW_BIN=/usr/local/bin
 else
     BREW_BIN=/home/linuxbrew/.linuxbrew/bin
