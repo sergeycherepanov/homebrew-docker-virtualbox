@@ -1,4 +1,4 @@
-# Homebrew Docker Virtualbox (But not only VirtualBox)
+# Homebrew Docker Virtualbox (But not VirtualBox only)
 This formula resolves the Docker issue on AMD based MacOS (Ryzentosh). Also can be used on any Mac.
 
 ## Installation
