@@ -7,8 +7,6 @@ class DockerMachineNfsGeneric < Formula
   version "0.5.4"
   revision 2
 
-  bottle :unneeded
-
   def install
     bin.install "docker-machine-nfs.sh" => "docker-machine-nfs-generic"
   end
