@@ -8,6 +8,15 @@ https://www.virtualbox.org/wiki/Downloads.
 > Please don't forget to remove all previous installations.  
 > This step required only if you want to use VirtualBox driver, otherwise see below how to start with another driver. 
 
+### Virtualbox 6.1.28+ Note
+Due the changes of virtualbox networking, you need to allow docker-machine host in order to use 192.168.99.0/8 network.  [More Details](https://www.virtualbox.org/manual/ch06.html#network_hostonly)
+
+Add this line into 
+`/etc/vbox/networks.conf`
+```bash
+* 192.168.99.0/8
+```
+
 ### Install the docker-virtualbox via Homebrew
 ```bash
 brew tap sergeycherepanov/docker-virtualbox
