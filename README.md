@@ -1,6 +1,8 @@
 # Homebrew Docker Virtualbox (But not VirtualBox only)
 This formula resolves the Docker issue on AMD based MacOS (Ryzentosh). Also can be used on any Mac.
 
+*PLEASE READ FIRST THE NOTICE: https://gist.github.com/slykar/e92732be9bf81a71e08068245656d70e?permalink_comment_id=4105556#gistcomment-4105556*
+
 ## Installation
 
 ### Install Virtualbox from Oracle website
